@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <%- include('../views/partials/head'); %>
+    <link rel="stylesheet" href="../css/foro-view.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+<!-- Container -->
+
+<body class="container-fluid min-vh-100 d-flex flex-column justify-content-between">
+  <header class="row">
+    
+    <%- include('../views/partials/navbar'); %>
+    <!-- BreadCrumb -->
+        <nav class = "row col-12 px-3 py-2 m-0"  style=" background-color: #0d6efd;" aria-label="breadcrumb">
+            <ol class="breadcrumb"> 
+              <li class="breadcrumb-item ps-1 text-light"><a class = "text-light" href="../index">Pagina inicial</a></li>
+              <li class="breadcrumb-item ps-1 text-light">Foro "<%= foro.Nombre %>"</li>
+            </ol>
+        </nav>
+    </header>
+<% let IPOfecha = new Date();%>
+  <!-- Main -->
+  <main class="row">
+    <!-- Foro -->
+    <section>
+      <h2 class="text-center mt-3 mb-3">
+        <%= foro.Nombre %>
+      </h2>
+      <!--Enviar Mensaje-->
+      <div class="row justify-content-center sticky-top foro-view-container-comentario">
+        <form class="border border-dark " action="/enviarMensajeForo" method="POST">
+          <input type="hidden" name="id" value="<%=foro.idForo %>">
+          <div class="row bg-light">
+            <br />
+            <p class="">Comenta en el foro</p>
+            <textarea class="" id="forumMessageSubmit" rows="3" cols="120" name="contenido" required></textarea>
+
+            <input class="btn btn-primary" id="submitButton" type="submit" value="Publicar">
+          </div>
+        </form>
+      </div>
+
+      <div class="foro-view-container">
+
+        <% mensajes.forEach((mensaje)=>{%>
+          <% let fecha=new Date(mensaje.fechaEmision); year=fecha.getFullYear(); month=fecha.getMonth()+1;
+            dt=fecha.getDate(); h=fecha.getHours(); min=fecha.getMinutes(); s=fecha.getSeconds(); if (dt < 10) { dt='0'
+            + dt; } if (s < 10) { s='0' + s; } if (h < 10) { h='0' + h; } if (min < 10) { min='0' + min; } if (month <
+            10) { month='0' + month; } let fechaEmision=dt+"/"+month+"/"+year+" "+h+":"+min+":"+s; %>
+
+
+            <div class="foro-view-outer" role="alert" aria-live="assertive" aria-atomic="true">
+              <div class="foro-view-mensaje">
+
+                <div class="toast-header border-dark">
+                  <img src="/img/profile.png"
+                     alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0">
+                  <strong class="mx-2 me-auto">
+                    <%=mensaje.usuario%>
+                  </strong>
+                  <small class="text-muted foro-view-margin-right-8px ">
+                    <%=fechaEmision%>
+                  </small>
+                  <%if (mensaje.emisor==idUsuario){ %>
+
+                    <form action="/deleteMensajeForo/<%= mensaje.idMensaje_foro%>" method="POST">
+                      <input type="hidden" name="idForo" value="<%=foro.idForo %>">
+                      <button type="submit" class="btn btn-danger btn-sm  " aria-label="Close">
+                        <i class="fa fa-close"></i>
+                      </button>
+                      <% } %>
+                    </form>
+
+                </div>
+                <div class="toast-body">
+                  <%=mensaje.contenido%>
+                </div>
+              </div>
+
+            </div>
+
+            <br />
+            <%});%>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Pie de pagina-->
+  <%- include('../views/partials/footer'); %> 
+  
+  <script>
+        // Get the input field
+    var input = document.getElementById("forumMessageSubmit");
+
+    // Execute a function when the user presses a key on the keyboard
+    input.addEventListener("keypress", function(event) {
+      // If the user presses the "Enter" key on the keyboard
+      if (event.key === "Enter") {
+        // Cancel the default action, if needed
+        event.preventDefault();
+        // Trigger the button element with a click
+        document.getElementById("submitButton").click();
+      }
+    });
+
+    // window.scrollTo(0,document.body.scrollHeight);
+    window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: "instant" });
+  </script>
+  <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+</body>
+
+</html>
